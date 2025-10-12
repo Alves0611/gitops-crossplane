@@ -1,0 +1,59 @@
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTable
+metadata:
+  name: crossplane-public-rt
+  labels:
+    environment: dev
+    managed-by: crossplane
+    type: public
+spec:
+  forProvider:
+    region: us-east-1
+    vpcIdRef:
+      name: crossplane-vpc
+    tags:
+      Name: crossplane-public-rt
+      Environment: dev
+      Type: public
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTable
+metadata:
+  name: crossplane-private-rt
+  labels:
+    environment: dev
+    managed-by: crossplane
+    type: private
+spec:
+  forProvider:
+    region: us-east-1
+    vpcIdRef:
+      name: crossplane-vpc
+    tags:
+      Name: crossplane-private-rt
+      Environment: dev
+      Type: private
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: Route
+metadata:
+  name: crossplane-public-route
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    routeTableIdRef:
+      name: crossplane-public-rt
+    destinationCidrBlock: "0.0.0.0/0"
+    gatewayIdRef:
+      name: crossplane-igw
+  providerConfigRef:
+    name: default

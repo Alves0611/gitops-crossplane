@@ -1,0 +1,47 @@
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: crossplane-private-subnet-1
+  labels:
+    environment: dev
+    managed-by: crossplane
+    type: private
+spec:
+  forProvider:
+    region: us-east-1
+    vpcIdRef:
+      name: crossplane-vpc
+    cidrBlock: "10.42.10.0/24"
+    availabilityZone: "us-east-1a"
+    mapPublicIpOnLaunch: false
+    tags:
+      Name: crossplane-private-subnet-1
+      Environment: dev
+      Type: private
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: Subnet
+metadata:
+  name: crossplane-private-subnet-2
+  labels:
+    environment: dev
+    managed-by: crossplane
+    type: private
+spec:
+  forProvider:
+    region: us-east-1
+    vpcIdRef:
+      name: crossplane-vpc
+    cidrBlock: "10.42.20.0/24"
+    availabilityZone: "us-east-1b"
+    mapPublicIpOnLaunch: false
+    tags:
+      Name: crossplane-private-subnet-2
+      Environment: dev
+      Type: private
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default

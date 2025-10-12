@@ -1,0 +1,67 @@
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTableAssociation
+metadata:
+  name: crossplane-public-subnet-1-association
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    subnetIdRef:
+      name: crossplane-public-subnet-1
+    routeTableIdRef:
+      name: crossplane-public-rt
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTableAssociation
+metadata:
+  name: crossplane-public-subnet-2-association
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    subnetIdRef:
+      name: crossplane-public-subnet-2
+    routeTableIdRef:
+      name: crossplane-public-rt
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTableAssociation
+metadata:
+  name: crossplane-private-subnet-1-association
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    subnetIdRef:
+      name: crossplane-private-subnet-1
+    routeTableIdRef:
+      name: crossplane-private-rt
+  providerConfigRef:
+    name: default
+---
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: RouteTableAssociation
+metadata:
+  name: crossplane-private-subnet-2-association
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    subnetIdRef:
+      name: crossplane-private-subnet-2
+    routeTableIdRef:
+      name: crossplane-private-rt
+  providerConfigRef:
+    name: default
