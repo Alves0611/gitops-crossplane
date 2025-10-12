@@ -1,0 +1,46 @@
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: studying-cluster-role
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    assumeRolePolicy: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Action": [
+              "sts:AssumeRole",
+              "sts:TagSession"
+            ],
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "eks.amazonaws.com"
+            }
+          }
+        ]
+      }
+    tags:
+      Name: studying-cluster-role
+      Environment: dev
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
+---
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: RolePolicyAttachment
+metadata:
+  name: studying-cluster-eks-cluster-policy
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    policyArn: arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+    roleRef:
+      name: studying-cluster-role
+  providerConfigRef:
+    name: default
