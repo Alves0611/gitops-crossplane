@@ -1,0 +1,18 @@
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: InternetGateway
+metadata:
+  name: crossplane-igw
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    vpcIdRef:
+      name: crossplane-vpc
+    tags:
+      Name: crossplane-igw
+      Environment: dev
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
