@@ -11,6 +11,10 @@ This project implements **GitOps for AWS infrastructure**, where:
 - ✅ **Crossplane creates resources**: Translates Kubernetes manifests into real AWS resources
 - ✅ **IRSA for security**: Authentication without hardcoded credentials
 
+## 🏗️ Architecture
+
+![GitOps Crossplane Architecture](images/crossplane.drawio.svg)
+
 ### How it works?
 
 ```
