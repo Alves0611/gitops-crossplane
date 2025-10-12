@@ -1,0 +1,31 @@
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: NodeGroup
+metadata:
+  name: studying-node-group
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    clusterNameRef:
+      name: studying-cluster
+    nodeRoleArnRef:
+      name: studying-node-group-role
+    subnetIdRefs:
+      - name: crossplane-private-subnet-1
+      - name: crossplane-private-subnet-2
+    instanceTypes:
+      - t3.micro
+    capacityType: ON_DEMAND
+    amiType: AL2023_x86_64_STANDARD
+    scalingConfig:
+      - desiredSize: 1
+        maxSize: 3
+        minSize: 1
+    tags:
+      Name: studying-node-group
+      Environment: dev
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default

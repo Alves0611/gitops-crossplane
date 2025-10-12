@@ -1,0 +1,32 @@
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: Cluster
+metadata:
+  name: studying-cluster
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    version: "1.33"
+    roleArnRef:
+      name: studying-cluster-role
+    accessConfig:
+      - authenticationMode: API_AND_CONFIG_MAP
+        bootstrapClusterCreatorAdminPermissions: true
+    vpcConfig:
+      - subnetIdRefs:
+          - name: crossplane-private-subnet-1
+          - name: crossplane-private-subnet-2
+    enabledClusterLogTypes:
+      - audit
+      - api
+      - authenticator
+      - controllerManager
+      - scheduler
+    tags:
+      Name: studying-cluster
+      Environment: dev
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
