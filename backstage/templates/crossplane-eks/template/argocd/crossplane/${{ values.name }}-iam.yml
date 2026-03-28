@@ -10,7 +10,7 @@ metadata:
 spec:
   project: studying
   source:
-    repoURL: git@github.com:Alves0611/crossplane-argocd.git
+    repoURL: https://github.com/Alves0611/crossplane-argocd.git
     targetRevision: main
     path: crossplane/aws/iam/${{ values.name }}
   destination:
