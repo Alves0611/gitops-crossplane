@@ -1,0 +1,31 @@
+apiVersion: eks.aws.upbound.io/v1beta1
+kind: NodeGroup
+metadata:
+  name: ${{ values.name }}-node-group
+  labels:
+    environment: ${{ values.environment }}
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    clusterNameRef:
+      name: ${{ values.name }}-cluster
+    nodeRoleArnRef:
+      name: ${{ values.name }}-node-group-role
+    subnetIdRefs:
+      - name: ${{ values.privateSubnet1Name }}
+      - name: ${{ values.privateSubnet2Name }}
+    instanceTypes:
+      - ${{ values.instanceType }}
+    capacityType: ${{ values.capacityType }}
+    amiType: AL2023_x86_64_STANDARD
+    scalingConfig:
+      - desiredSize: ${{ values.desiredNodes }}
+        maxSize: ${{ values.maxNodes }}
+        minSize: ${{ values.minNodes }}
+    tags:
+      Name: ${{ values.name }}-node-group
+      Environment: ${{ values.environment }}
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
