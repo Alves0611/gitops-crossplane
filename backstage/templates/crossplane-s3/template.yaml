@@ -1,0 +1,117 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: crossplane-s3
+  title: Create Crossplane S3 Bucket
+  description: Creates an S3 bucket in AWS via Crossplane, opening a pull request to the crossplane-argocd repo
+  tags:
+    - aws
+    - crossplane
+    - s3
+    - storage
+    - infrastructure
+spec:
+  owner: user:default/Alves0611
+  type: infrastructure
+  parameters:
+    - title: Bucket Info
+      required:
+        - name
+        - owner
+      properties:
+        name:
+          title: Stack Name
+          type: string
+          description: "Name for the S3 stack (lowercase, hyphens allowed)"
+          pattern: "^[a-z0-9-]+$"
+          ui:autofocus: true
+        owner:
+          title: Owner
+          type: string
+          default: user:default/Alves0611
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - User
+                - Group
+        region:
+          title: AWS Region
+          type: string
+          description: AWS region for the S3 bucket
+          default: us-east-1
+          enum:
+            - us-east-1
+            - us-east-2
+            - us-west-2
+            - eu-west-1
+            - sa-east-1
+        environment:
+          title: Environment
+          type: string
+          description: Target environment
+          default: dev
+          enum:
+            - dev
+            - staging
+            - prod
+    - title: Bucket Configuration
+      properties:
+        versioning:
+          title: Enable Versioning
+          type: boolean
+          description: Enable object versioning on the bucket
+          default: true
+        forceDestroy:
+          title: Force Destroy
+          type: boolean
+          description: Allow bucket deletion even when it contains objects
+          default: false
+        blockPublicAccess:
+          title: Block Public Access
+          type: boolean
+          description: Block all public access to the bucket
+          default: true
+        sseAlgorithm:
+          title: Encryption Algorithm
+          type: string
+          description: Server-side encryption algorithm
+          default: AES256
+          enum:
+            - AES256
+            - "aws:kms"
+  steps:
+    - id: fetch-template
+      name: Fetch Crossplane S3 Files
+      action: fetch:template
+      input:
+        url: ./template
+        values:
+          name: ${{ parameters.name }}
+          region: ${{ parameters.region }}
+          environment: ${{ parameters.environment }}
+          versioning: ${{ parameters.versioning }}
+          forceDestroy: ${{ parameters.forceDestroy }}
+          blockPublicAccess: ${{ parameters.blockPublicAccess }}
+          sseAlgorithm: ${{ parameters.sseAlgorithm }}
+    - id: publish-pr
+      name: Open Pull Request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=Alves0611&repo=crossplane-argocd
+        branchName: feature/crossplane-s3-${{ parameters.name }}
+        title: "feat: add Crossplane S3 stack ${{ parameters.name }}"
+        description: |
+          This PR was created by the Backstage Crossplane S3 template.
+
+          **Stack:** ${{ parameters.name }}
+          **Region:** ${{ parameters.region }}
+          **Environment:** ${{ parameters.environment }}
+          **Versioning:** ${{ parameters.versioning }}
+          **Block Public Access:** ${{ parameters.blockPublicAccess }}
+          **Encryption:** ${{ parameters.sseAlgorithm }}
+          **Force Destroy:** ${{ parameters.forceDestroy }}
+  output:
+    links:
+      - title: Pull Request
+        url: ${{ steps['publish-pr'].output.remoteUrl }}
