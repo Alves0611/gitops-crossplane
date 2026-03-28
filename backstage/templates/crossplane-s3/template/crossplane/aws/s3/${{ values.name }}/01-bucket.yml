@@ -1,0 +1,38 @@
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  name: ${{ values.name }}-bucket
+  labels:
+    environment: ${{ values.environment }}
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    forceDestroy: ${{ values.forceDestroy }}
+    tags:
+      Name: ${{ values.name }}-bucket
+      Environment: ${{ values.environment }}
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
+{%- if values.blockPublicAccess %}
+---
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: BucketPublicAccessBlock
+metadata:
+  name: ${{ values.name }}-bucket-public-access-block
+  labels:
+    environment: ${{ values.environment }}
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    bucketRef:
+      name: ${{ values.name }}-bucket
+    blockPublicAcls: true
+    blockPublicPolicy: true
+    ignorePublicAcls: true
+    restrictPublicBuckets: true
+  providerConfigRef:
+    name: default
+{%- endif %}

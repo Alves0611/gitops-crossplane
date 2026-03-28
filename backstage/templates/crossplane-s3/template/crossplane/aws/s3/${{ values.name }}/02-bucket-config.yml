@@ -1,0 +1,36 @@
+{%- if values.versioning %}
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: BucketVersioning
+metadata:
+  name: ${{ values.name }}-bucket-versioning
+  labels:
+    environment: ${{ values.environment }}
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    bucketRef:
+      name: ${{ values.name }}-bucket
+    versioningConfiguration:
+      - status: Enabled
+  providerConfigRef:
+    name: default
+{%- endif %}
+---
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: BucketServerSideEncryptionConfiguration
+metadata:
+  name: ${{ values.name }}-bucket-sse
+  labels:
+    environment: ${{ values.environment }}
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: ${{ values.region }}
+    bucketRef:
+      name: ${{ values.name }}-bucket
+    rule:
+      - applyServerSideEncryptionByDefault:
+          - sseAlgorithm: ${{ values.sseAlgorithm }}
+  providerConfigRef:
+    name: default
