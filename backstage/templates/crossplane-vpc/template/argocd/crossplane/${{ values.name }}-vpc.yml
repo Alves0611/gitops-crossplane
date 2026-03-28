@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${{ values.name }}-vpc
+  namespace: argocd
+  labels:
+    app: crossplane
+    layer: infrastructure
+    component: vpc
+spec:
+  project: studying
+  source:
+    repoURL: git@github.com:Alves0611/crossplane-argocd.git
+    targetRevision: main
+    path: crossplane/aws/vpc/${{ values.name }}
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  ignoreDifferences:
+  - group: ec2.aws.upbound.io
+    kind: "*"
+    jsonPointers:
+    - /spec/forProvider/tags/crossplane-kind
+    - /spec/forProvider/tags/crossplane-name
+    - /spec/forProvider/tags/crossplane-providerconfig
