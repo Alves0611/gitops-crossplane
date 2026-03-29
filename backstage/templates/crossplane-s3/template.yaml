@@ -53,8 +53,8 @@ spec:
           default: dev
           enum:
             - dev
-            - staging
-            - prod
+            - hml
+            - prd
     - title: Bucket Configuration
       properties:
         versioning:
