@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: crossplane-eks
   title: Create Crossplane EKS Cluster
-  description: Creates an EKS cluster stack in AWS via Crossplane, opening a pull request to the crossplane-argocd repo
+  description: Creates an EKS cluster stack in AWS via Crossplane, opening a pull request to the gitops-crossplane repo
   tags:
     - aws
     - crossplane
@@ -149,7 +149,7 @@ spec:
       name: Open Pull Request
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?owner=Alves0611&repo=crossplane-argocd
+        repoUrl: github.com?owner=Alves0611&repo=gitops-crossplane
         branchName: feature/crossplane-eks-${{ parameters.name }}
         title: "feat: add Crossplane EKS stack ${{ parameters.name }}"
         description: |
