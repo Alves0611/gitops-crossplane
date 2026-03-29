@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: crossplane-vpc
   title: Create Crossplane VPC
-  description: Creates a VPC stack in AWS via Crossplane, opening a pull request to the crossplane-argocd repo
+  description: Creates a VPC stack in AWS via Crossplane, opening a pull request to the gitops-crossplane repo
   tags:
     - aws
     - crossplane
@@ -108,7 +108,7 @@ spec:
       name: Open Pull Request
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?owner=Alves0611&repo=crossplane-argocd
+        repoUrl: github.com?owner=Alves0611&repo=gitops-crossplane
         branchName: feature/crossplane-vpc-${{ parameters.name }}
         title: "feat: add Crossplane VPC stack ${{ parameters.name }}"
         description: |
