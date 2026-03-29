@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: crossplane-s3
   title: Create Crossplane S3 Bucket
-  description: Creates an S3 bucket in AWS via Crossplane, opening a pull request to the crossplane-argocd repo
+  description: Creates an S3 bucket in AWS via Crossplane, opening a pull request to the gitops-crossplane repo
   tags:
     - aws
     - crossplane
@@ -98,7 +98,7 @@ spec:
       name: Open Pull Request
       action: publish:github:pull-request
       input:
-        repoUrl: github.com?owner=Alves0611&repo=crossplane-argocd
+        repoUrl: github.com?owner=Alves0611&repo=gitops-crossplane
         branchName: feature/crossplane-s3-${{ parameters.name }}
         title: "feat: add Crossplane S3 stack ${{ parameters.name }}"
         description: |
