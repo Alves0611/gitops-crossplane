@@ -1,0 +1,8 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: upbound-aws-s3
+spec:
+  package: xpkg.upbound.io/upbound/provider-aws-s3:v1.18.3
+  runtimeConfigRef:
+    name: provider-aws-s3
