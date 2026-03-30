@@ -1,0 +1,35 @@
+
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: BucketVersioning
+metadata:
+  name: test-73191823231-bucket-versioning
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    bucketRef:
+      name: test-73191823231-bucket
+    versioningConfiguration:
+      - status: Enabled
+  providerConfigRef:
+    name: default
+---
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: BucketServerSideEncryptionConfiguration
+metadata:
+  name: test-73191823231-bucket-sse
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    bucketRef:
+      name: test-73191823231-bucket
+    rule:
+      - applyServerSideEncryptionByDefault:
+          - sseAlgorithm: AES256
+  providerConfigRef:
+    name: default

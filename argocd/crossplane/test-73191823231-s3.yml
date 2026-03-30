@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: test-73191823231-s3
+  namespace: argocd
+  labels:
+    app: crossplane
+    layer: infrastructure
+    component: s3
+spec:
+  project: studying
+  source:
+    repoURL: https://github.com/Alves0611/gitops-crossplane.git
+    targetRevision: main
+    path: crossplane/aws/s3/test-73191823231
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  ignoreDifferences:
+  - group: s3.aws.upbound.io
+    kind: "*"
+    jsonPointers:
+    - /spec/forProvider/tags/crossplane-kind
+    - /spec/forProvider/tags/crossplane-name
+    - /spec/forProvider/tags/crossplane-providerconfig
