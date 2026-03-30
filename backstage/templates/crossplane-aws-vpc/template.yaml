@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: crossplane-vpc
-  title: Create Crossplane VPC
+  name: crossplane-aws-vpc
+  title: Create Crossplane AWS VPC
   description: Creates a VPC stack in AWS via Crossplane, opening a pull request to the gitops-crossplane repo
   tags:
     - aws
@@ -109,7 +109,7 @@ spec:
       action: publish:github:pull-request
       input:
         repoUrl: github.com?owner=Alves0611&repo=gitops-crossplane
-        branchName: feature/crossplane-vpc-${{ parameters.name }}
+        branchName: feature/crossplane-aws-vpc-${{ parameters.name }}
         title: "feat: add Crossplane VPC stack ${{ parameters.name }}"
         description: |
           This PR was created by the Backstage Crossplane VPC template.
