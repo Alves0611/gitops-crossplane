@@ -1,0 +1,36 @@
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  name: backstage-0611-bucket
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    forceDestroy: true
+    tags:
+      Name: backstage-0611-bucket
+      Environment: dev
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
+---
+apiVersion: s3.aws.upbound.io/v1beta1
+kind: BucketPublicAccessBlock
+metadata:
+  name: backstage-0611-bucket-public-access-block
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    region: us-east-1
+    bucketRef:
+      name: backstage-0611-bucket
+    blockPublicAcls: true
+    blockPublicPolicy: true
+    ignorePublicAcls: true
+    restrictPublicBuckets: true
+  providerConfigRef:
+    name: default
