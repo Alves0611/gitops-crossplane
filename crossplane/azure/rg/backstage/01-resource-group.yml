@@ -1,0 +1,16 @@
+apiVersion: azure.upbound.io/v1beta1
+kind: ResourceGroup
+metadata:
+  name: backstage-rg
+  labels:
+    environment: dev
+    managed-by: crossplane
+spec:
+  forProvider:
+    location: eastus
+    tags:
+      Name: backstage-rg
+      Environment: dev
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
