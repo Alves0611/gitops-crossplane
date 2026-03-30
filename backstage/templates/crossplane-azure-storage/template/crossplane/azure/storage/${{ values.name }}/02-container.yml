@@ -1,0 +1,14 @@
+apiVersion: storage.azure.upbound.io/v1beta1
+kind: Container
+metadata:
+  name: ${{ values.name }}-${{ values.containerName }}
+  labels:
+    environment: ${{ values.environment }}
+    managed-by: crossplane
+spec:
+  forProvider:
+    containerAccessType: ${{ values.containerAccessType }}
+    storageAccountNameRef:
+      name: ${{ values.name }}sa
+  providerConfigRef:
+    name: default

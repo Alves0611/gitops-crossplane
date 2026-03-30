@@ -1,0 +1,162 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: crossplane-azure-storage
+  title: Create Crossplane Azure Storage Account
+  description: Creates an Azure Storage Account with a Blob Container via Crossplane, opening a pull request to the gitops-crossplane repo
+  tags:
+    - azure
+    - crossplane
+    - storage
+    - blob
+    - infrastructure
+spec:
+  owner: user:default/Alves0611
+  type: infrastructure
+  parameters:
+    - title: Storage Info
+      required:
+        - name
+        - owner
+        - resourceGroupName
+      properties:
+        name:
+          title: Stack Name
+          type: string
+          description: "Name for the Storage stack (lowercase, no hyphens, max 24 chars)"
+          pattern: "^[a-z0-9]+$"
+          ui:autofocus: true
+        owner:
+          title: Owner
+          type: string
+          default: user:default/Alves0611
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - User
+                - Group
+        region:
+          title: Azure Region
+          type: string
+          description: Azure region for the Storage Account
+          default: eastus
+          enum:
+            - eastus
+            - eastus2
+            - westus2
+            - brazilsouth
+        environment:
+          title: Environment
+          type: string
+          description: Target environment
+          default: dev
+          enum:
+            - dev
+            - hml
+            - prd
+        resourceGroupName:
+          title: Resource Group Name
+          type: string
+          description: "Azure Resource Group name"
+          default: rg-portfolio-prod
+    - title: Storage Configuration
+      properties:
+        accountTier:
+          title: Account Tier
+          type: string
+          description: "Standard (HDD) or Premium (SSD)"
+          default: Standard
+          enum:
+            - Standard
+            - Premium
+        accountReplicationType:
+          title: Replication Type
+          type: string
+          description: "LRS (local), GRS (geo), ZRS (zone-redundant)"
+          default: LRS
+          enum:
+            - LRS
+            - GRS
+            - RAGRS
+            - ZRS
+        accessTier:
+          title: Access Tier
+          type: string
+          description: "Hot (frequent access) or Cool (infrequent, lower cost)"
+          default: Hot
+          enum:
+            - Hot
+            - Cool
+        enableHttpsOnly:
+          title: HTTPS Only
+          type: boolean
+          description: Require HTTPS for all requests
+          default: true
+        minTlsVersion:
+          title: Minimum TLS Version
+          type: string
+          description: Minimum TLS version
+          default: TLS1_2
+          enum:
+            - TLS1_0
+            - TLS1_1
+            - TLS1_2
+    - title: Blob Container
+      properties:
+        containerName:
+          title: Container Name
+          type: string
+          description: "Name for the blob container (lowercase, hyphens allowed)"
+          default: data
+          pattern: "^[a-z0-9-]+$"
+        containerAccessType:
+          title: Container Access Type
+          type: string
+          description: "private (no public), blob (public read blobs), container (public read all)"
+          default: private
+          enum:
+            - private
+            - blob
+            - container
+  steps:
+    - id: fetch-template
+      name: Fetch Crossplane Azure Storage Files
+      action: fetch:template
+      input:
+        url: ./template
+        values:
+          name: ${{ parameters.name }}
+          region: ${{ parameters.region }}
+          environment: ${{ parameters.environment }}
+          resourceGroupName: ${{ parameters.resourceGroupName }}
+          accountTier: ${{ parameters.accountTier }}
+          accountReplicationType: ${{ parameters.accountReplicationType }}
+          accessTier: ${{ parameters.accessTier }}
+          enableHttpsOnly: ${{ parameters.enableHttpsOnly }}
+          minTlsVersion: ${{ parameters.minTlsVersion }}
+          containerName: ${{ parameters.containerName }}
+          containerAccessType: ${{ parameters.containerAccessType }}
+    - id: publish-pr
+      name: Open Pull Request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=Alves0611&repo=gitops-crossplane
+        branchName: feature/crossplane-azure-storage-${{ parameters.name }}
+        title: "feat: add Crossplane Azure Storage stack ${{ parameters.name }}"
+        description: |
+          This PR was created by the Backstage Crossplane Azure Storage template.
+
+          **Stack:** ${{ parameters.name }}
+          **Region:** ${{ parameters.region }}
+          **Environment:** ${{ parameters.environment }}
+          **Resource Group:** ${{ parameters.resourceGroupName }}
+          **Tier:** ${{ parameters.accountTier }}
+          **Replication:** ${{ parameters.accountReplicationType }}
+          **Access Tier:** ${{ parameters.accessTier }}
+          **HTTPS Only:** ${{ parameters.enableHttpsOnly }}
+          **Container:** ${{ parameters.containerName }} (${{ parameters.containerAccessType }})
+  output:
+    links:
+      - title: Pull Request
+        url: ${{ steps['publish-pr'].output.remoteUrl }}

@@ -1,0 +1,23 @@
+apiVersion: storage.azure.upbound.io/v1beta2
+kind: Account
+metadata:
+  name: ${{ values.name }}sa
+  labels:
+    environment: ${{ values.environment }}
+    managed-by: crossplane
+spec:
+  forProvider:
+    location: ${{ values.region }}
+    resourceGroupName: ${{ values.resourceGroupName }}
+    accountTier: ${{ values.accountTier }}
+    accountReplicationType: ${{ values.accountReplicationType }}
+    accountKind: StorageV2
+    accessTier: ${{ values.accessTier }}
+    enableHttpsTrafficOnly: ${{ values.enableHttpsOnly }}
+    minTlsVersion: ${{ values.minTlsVersion }}
+    tags:
+      Name: ${{ values.name }}-storage
+      Environment: ${{ values.environment }}
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
