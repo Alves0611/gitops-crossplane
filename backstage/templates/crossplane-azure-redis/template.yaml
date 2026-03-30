@@ -1,0 +1,147 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: crossplane-azure-redis
+  title: Create Crossplane Azure Redis Cache
+  description: Creates an Azure Cache for Redis via Crossplane, opening a pull request to the gitops-crossplane repo
+  tags:
+    - azure
+    - crossplane
+    - redis
+    - cache
+    - infrastructure
+spec:
+  owner: user:default/Alves0611
+  type: infrastructure
+  parameters:
+    - title: Redis Info
+      required:
+        - name
+        - owner
+        - resourceGroupName
+      properties:
+        name:
+          title: Stack Name
+          type: string
+          description: "Name for the Redis stack (lowercase, hyphens allowed)"
+          pattern: "^[a-z0-9-]+$"
+          ui:autofocus: true
+        owner:
+          title: Owner
+          type: string
+          default: user:default/Alves0611
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind:
+                - User
+                - Group
+        region:
+          title: Azure Region
+          type: string
+          description: Azure region for the Redis Cache
+          default: eastus
+          enum:
+            - eastus
+            - eastus2
+            - westus2
+            - brazilsouth
+        environment:
+          title: Environment
+          type: string
+          description: Target environment
+          default: dev
+          enum:
+            - dev
+            - hml
+            - prd
+        resourceGroupName:
+          title: Resource Group Name
+          type: string
+          description: "Azure Resource Group name"
+          default: rg-portfolio-prod
+    - title: Redis Configuration
+      properties:
+        skuName:
+          title: SKU
+          type: string
+          description: "Basic (dev/test), Standard (replication), Premium (clustering)"
+          default: Basic
+          enum:
+            - Basic
+            - Standard
+            - Premium
+        family:
+          title: Family
+          type: string
+          description: "C for Basic/Standard, P for Premium"
+          default: C
+          enum:
+            - C
+            - P
+        capacity:
+          title: Capacity
+          type: number
+          description: "Cache size (0=250MB, 1=1GB, 2=2.5GB, 3=6GB, 4=13GB, 5=26GB, 6=53GB)"
+          default: 0
+          enum:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            - 6
+        enableNonSslPort:
+          title: Enable Non-SSL Port
+          type: boolean
+          description: Allow unencrypted connections (not recommended)
+          default: false
+        minimumTlsVersion:
+          title: Minimum TLS Version
+          type: string
+          description: Minimum TLS version for connections
+          default: "1.2"
+          enum:
+            - "1.0"
+            - "1.1"
+            - "1.2"
+  steps:
+    - id: fetch-template
+      name: Fetch Crossplane Azure Redis Files
+      action: fetch:template
+      input:
+        url: ./template
+        values:
+          name: ${{ parameters.name }}
+          region: ${{ parameters.region }}
+          environment: ${{ parameters.environment }}
+          resourceGroupName: ${{ parameters.resourceGroupName }}
+          skuName: ${{ parameters.skuName }}
+          family: ${{ parameters.family }}
+          capacity: ${{ parameters.capacity }}
+          enableNonSslPort: ${{ parameters.enableNonSslPort }}
+          minimumTlsVersion: ${{ parameters.minimumTlsVersion }}
+    - id: publish-pr
+      name: Open Pull Request
+      action: publish:github:pull-request
+      input:
+        repoUrl: github.com?owner=Alves0611&repo=gitops-crossplane
+        branchName: feature/crossplane-azure-redis-${{ parameters.name }}
+        title: "feat: add Crossplane Azure Redis stack ${{ parameters.name }}"
+        description: |
+          This PR was created by the Backstage Crossplane Azure Redis template.
+
+          **Stack:** ${{ parameters.name }}
+          **Region:** ${{ parameters.region }}
+          **Environment:** ${{ parameters.environment }}
+          **Resource Group:** ${{ parameters.resourceGroupName }}
+          **SKU:** ${{ parameters.skuName }}
+          **Family:** ${{ parameters.family }}
+          **Capacity:** ${{ parameters.capacity }}
+          **Non-SSL Port:** ${{ parameters.enableNonSslPort }}
+          **Min TLS:** ${{ parameters.minimumTlsVersion }}
+  output:
+    links:
+      - title: Pull Request
+        url: ${{ steps['publish-pr'].output.remoteUrl }}
