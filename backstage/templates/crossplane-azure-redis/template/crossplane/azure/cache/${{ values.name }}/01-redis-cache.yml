@@ -1,0 +1,24 @@
+apiVersion: cache.azure.upbound.io/v1beta1
+kind: RedisCache
+metadata:
+  name: ${{ values.name }}-redis
+  labels:
+    environment: ${{ values.environment }}
+    managed-by: crossplane
+spec:
+  forProvider:
+    location: ${{ values.region }}
+    resourceGroupName: ${{ values.resourceGroupName }}
+    skuName: ${{ values.skuName }}
+    family: ${{ values.family }}
+    capacity: ${{ values.capacity }}
+    enableNonSslPort: ${{ values.enableNonSslPort }}
+    minimumTlsVersion: "${{ values.minimumTlsVersion }}"
+    redisConfiguration:
+      - maxmemoryPolicy: allkeys-lru
+    tags:
+      Name: ${{ values.name }}-redis
+      Environment: ${{ values.environment }}
+      ManagedBy: crossplane
+  providerConfigRef:
+    name: default
