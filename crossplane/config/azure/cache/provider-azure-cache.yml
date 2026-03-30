@@ -1,0 +1,6 @@
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: upbound-azure-cache
+spec:
+  package: xpkg.upbound.io/upbound/provider-azure-cache:v2.5.2
