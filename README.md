@@ -1,54 +1,175 @@
-# GitOps Crossplane - AWS Infrastructure as Code
+# GitOps IaaS - Multi-Cloud Infrastructure as a Service
 
-> Complete AWS infrastructure GitOps: ArgoCD automatically provisions all resources via Crossplane
+![Crossplane](https://img.shields.io/badge/Crossplane-v2.2.0-blue?logo=crossplane&logoColor=white)
+![ArgoCD](https://img.shields.io/badge/ArgoCD-v2.14.7-orange?logo=argo&logoColor=white)
+![Backstage](https://img.shields.io/badge/Backstage-Self--Service-blueviolet?logo=backstage&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.34-326CE5?logo=kubernetes&logoColor=white)
+![GitOps](https://img.shields.io/badge/GitOps-Enabled-success?logo=git&logoColor=white)
+![IaC](https://img.shields.io/badge/IaC-Multi--Cloud-informational?logo=crossplane&logoColor=white)
 
-## 🎯 About
+> Self-service infrastructure platform powered by GitOps. Teams request cloud resources through Backstage, and ArgoCD + Crossplane provision them automatically across AWS and Azure — no Terraform, no tickets, no waiting.
 
-This project implements **GitOps for AWS infrastructure**, where:
+## About
 
-- ✅ **Git is the source of truth**: All infrastructure is versioned as code
-- ✅ **ArgoCD provisions automatically**: Changes in Git are automatically applied to AWS
-- ✅ **Crossplane creates resources**: Translates Kubernetes manifests into real AWS resources
-- ✅ **IRSA for security**: Authentication without hardcoded credentials
+This project is a **production-ready platform** that turns infrastructure provisioning into a self-service experience:
 
-## 🏗️ Architecture
+- **Developers** pick a template in Backstage, fill in parameters, and click "Create"
+- **A Pull Request** is automatically opened with the infrastructure manifests
+- **ArgoCD** detects the merge and syncs the manifests to the cluster
+- **Crossplane** translates them into real cloud resources in AWS or Azure
+- **Zero manual intervention** — from request to running infrastructure in minutes
 
-![GitOps Crossplane Architecture](images/crossplane.drawio.svg)
+No CLI access needed. No cloud console. No Terraform state files to manage. Just Git.
 
-### How it works?
+## Architecture
 
-```
-1. You commit YAML to GitHub
-   ↓
-2. ArgoCD detects changes
-   ↓
-3. ArgoCD applies to cluster
-   ↓
-4. Crossplane creates AWS resources
-   ↓
-5. Infrastructure automatically provisioned!
-```
+![GitOps IaaS Architecture](images/gitops-iaas.drawio.svg)
 
-## 🏗️ Provisioned Infrastructure
-
-- VPC with public and private subnets
-- Internet Gateway and Route Tables
-- EKS Cluster with Node Groups
-- IAM Roles and Policies
-
-## 📁 Structure
+### The Flow
 
 ```
-crossplane/
-├── aws/          # AWS Resources (VPC, IAM, EKS)
-├── config/       # Crossplane Configuration (Providers, DRCs)
-└── argocd/       # ArgoCD Applications (GitOps)
+Developer opens Backstage  ──>  Selects template (S3, Redis, VPC...)
+         │
+         v
+Backstage opens a PR on GitHub  ──>  Team reviews & merges
+         │
+         v
+ArgoCD detects the change  ──>  Syncs manifests to EKS cluster
+         │
+         v
+Crossplane provisions the resource  ──>  AWS or Azure API calls
+         │
+         v
+Infrastructure is live  ──>  Tracked, versioned, auditable
 ```
 
-## 📚 Technologies
+## What Can You Provision?
 
-- Kubernetes
-- Crossplane
-- ArgoCD
-- AWS (VPC, EKS, IAM)
+### AWS
 
+| Resource | Template | Provider |
+|----------|----------|----------|
+| S3 Bucket | Versioning, encryption, public access block | `provider-aws-s3` |
+| VPC | Public/private subnets, IGW, route tables across 2 AZs | `provider-aws-ec2` |
+| EKS Cluster | Managed node groups, IAM roles, cluster logging | `provider-aws-eks` |
+
+### Azure
+
+| Resource | Template | Provider |
+|----------|----------|----------|
+| Resource Group | Region, environment tags | `provider-family-azure` |
+| Redis Cache | Basic/Standard/Premium SKUs, TLS config | `provider-azure-cache` |
+| Storage Account | Blob containers, replication, access tiers | `provider-azure-storage` |
+
+## Key Differentiators
+
+### Self-Service at Scale
+Backstage templates abstract away cloud complexity. A developer doesn't need to know Crossplane CRDs or Kubernetes — they fill a form and get infrastructure.
+
+### Multi-Cloud from Day One
+Same workflow, same Git repo, same ArgoCD instance — whether you're provisioning an S3 bucket in AWS or a Storage Account in Azure.
+
+### GitOps-Native
+Every infrastructure change is a Git commit. Full audit trail, easy rollbacks, PR-based reviews. No drift — ArgoCD continuously reconciles desired state with actual state.
+
+### No Credentials in the Pipeline
+AWS authentication uses IRSA (IAM Roles for Service Accounts). Azure uses a Service Principal stored as a Kubernetes secret. No access keys in CI/CD.
+
+### Organized for Enterprise
+Resources are structured by cloud provider and service type, making it easy to navigate even with hundreds of resources:
+
+```
+argocd/crossplane/
+├── aws/
+│   ├── s3/
+│   ├── vpc/
+│   ├── eks/
+│   └── iam/
+└── azure/
+    ├── rg/
+    ├── cache/
+    └── storage/
+```
+
+## Project Structure
+
+```
+.
+├── argocd/
+│   ├── AppOfApps/                    # Orchestrator - discovers all apps recursively
+│   └── crossplane/
+│       ├── crossplane-config.yml     # Syncs provider configurations
+│       ├── aws/{service}/{name}.yml  # AWS resource apps (generated by Backstage)
+│       └── azure/{service}/{name}.yml
+│
+├── crossplane/
+│   ├── config/
+│   │   ├── aws/                      # AWS providers, DRCs, IRSA config
+│   │   └── azure/                    # Azure providers, Service Principal config
+│   ├── aws/{service}/{name}/         # AWS resource manifests
+│   └── azure/{service}/{name}/       # Azure resource manifests
+│
+├── backstage/
+│   ├── all-templates.yaml            # Template registry
+│   └── templates/
+│       ├── crossplane-aws-s3/        # S3 bucket template
+│       ├── crossplane-aws-vpc/       # VPC template
+│       ├── crossplane-aws-eks/       # EKS cluster template
+│       ├── crossplane-azure-rg/      # Resource Group template
+│       ├── crossplane-azure-redis/   # Redis Cache template
+│       └── crossplane-azure-storage/ # Storage Account template
+│
+└── docs/                             # Setup and troubleshooting guides
+```
+
+## Tech Stack
+
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| Self-Service Portal | **Backstage** | Developer portal with infrastructure templates |
+| GitOps Engine | **ArgoCD** | Continuous reconciliation from Git to cluster |
+| Infrastructure Engine | **Crossplane** | Kubernetes-native cloud resource provisioning |
+| Cloud Providers | **AWS** + **Azure** | Multi-cloud resource targets |
+| Cluster | **EKS** (Kubernetes 1.34) | Control plane running ArgoCD + Crossplane |
+| Auth (AWS) | **IRSA** | Keyless authentication via OIDC federation |
+| Auth (Azure) | **Service Principal** | Scoped credentials stored as K8s secret |
+
+## Getting Started
+
+### Prerequisites
+
+- EKS cluster with OIDC provider configured
+- ArgoCD installed in the cluster
+- Backstage instance with GitHub integration
+- AWS CLI and Azure CLI authenticated
+
+### Quick Setup
+
+```bash
+# 1. Install Crossplane
+helm repo add crossplane-stable https://charts.crossplane.io/stable
+helm install crossplane crossplane-stable/crossplane \
+  --namespace crossplane-system --create-namespace --wait
+
+# 2. Apply provider configurations
+kubectl apply -R -f crossplane/config/
+
+# 3. Deploy the ArgoCD orchestrator
+kubectl apply -f argocd/AppOfApps/main.yml
+
+# 4. Register templates in Backstage
+# Import backstage/all-templates.yaml in your Backstage catalog
+```
+
+For detailed setup including IAM roles and troubleshooting, see `docs/crossplane-setup.md`.
+
+## Adding New Templates
+
+The project is designed to be extended. To add a new resource type:
+
+1. Create a new directory under `backstage/templates/crossplane-{cloud}-{service}/`
+2. Define the `template.yaml` with parameters and steps
+3. Add ArgoCD app and Crossplane resource templates under `template/`
+4. Register it in `backstage/all-templates.yaml`
+
+Every template follows the same pattern — check the existing ones for reference.
