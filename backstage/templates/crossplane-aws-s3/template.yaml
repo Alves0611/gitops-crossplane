@@ -1,8 +1,8 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: crossplane-s3
-  title: Create Crossplane S3 Bucket
+  name: crossplane-aws-s3
+  title: Create Crossplane AWS S3 Bucket
   description: Creates an S3 bucket in AWS via Crossplane, opening a pull request to the gitops-crossplane repo
   tags:
     - aws
@@ -99,7 +99,7 @@ spec:
       action: publish:github:pull-request
       input:
         repoUrl: github.com?owner=Alves0611&repo=gitops-crossplane
-        branchName: feature/crossplane-s3-${{ parameters.name }}
+        branchName: feature/crossplane-aws-s3-${{ parameters.name }}
         title: "feat: add Crossplane S3 stack ${{ parameters.name }}"
         description: |
           This PR was created by the Backstage Crossplane S3 template.
