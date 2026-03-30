@@ -5,6 +5,8 @@ metadata:
   description: Crossplane infrastructure templates for Backstage
 spec:
   targets:
-    - ./templates/crossplane-vpc/template.yaml
-    - ./templates/crossplane-eks/template.yaml
-    - ./templates/crossplane-s3/template.yaml
+    - ./templates/crossplane-aws-vpc/template.yaml
+    - ./templates/crossplane-aws-eks/template.yaml
+    - ./templates/crossplane-aws-s3/template.yaml
+    - ./templates/crossplane-azure-redis/template.yaml
+    - ./templates/crossplane-azure-storage/template.yaml
